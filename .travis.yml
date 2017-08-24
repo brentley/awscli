@@ -10,9 +10,12 @@ script:
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
   - export REPO=$DOCKER_USER/awscli
   - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
-  - docker build -t $REPO:$TRAVIS_COMMIT .
-  - docker tag -f $REPO:$TRAVIS_COMMIT $REPO:$TAG
-  - docker tag -f $REPO:$TRAVIS_COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+  - export COMMIT=`echo $TRAVIS_COMMIT | cut -c1-7`
+  - docker build -t $REPO:$COMMIT .
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
   - docker push $REPO
+  - docker push $REPO:$COMMIT
+  - docker push $REPO:$TAG
 
 after_success:
